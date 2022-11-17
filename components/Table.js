@@ -1,29 +1,58 @@
-import { useState } from "react";
+import { useState, Fragment } from "react";
 
 export default function Table(data) {
+  const filters = ["gender", "status"];
   // paginate data
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const [query, setQuery] = useState("");
+  const [category, setCategory] = useState("first_name");
+  const [status, setStatus] = useState("active");
+  const [gender, setGender] = useState("male");
 
   const handleChange = (e) => {
-    setQuery(e.target.value.toLowerCase());
     setUserdata(searchData(e.target.value.toLowerCase()));
   };
 
+  const handleCategoryChange = (e) => {
+    setCategory(e.target.value);
+  };
+
+  const handleFilterChange = (e) => {
+    if (category === "status") {
+      setStatus(e.target.value);
+    } else {
+      setGender(e.target.value);
+    }
+    setUserdata(searchData(e.target.value));
+  };
+
   const searchData = (query) => {
+    console.log(query);
     if (!query) {
       return data.data;
     }
-    const searchCategory =
-      document.getElementById("search-category").value;
+
+    function searchInCategory(user) {
+      let filters;
+      if (category === "city") {
+        filters = user.address[category]
+          .toLowerCase()
+          .startsWith(query);
+      } else if (category === "status") {
+        console.log("status");
+        filters = user.subscription.status
+          .toLowerCase()
+          .startsWith(query);
+      } else {
+        filters = user[category].toLowerCase().startsWith(query);
+      }
+      return filters;
+    }
 
     let filteredData = data.data
-      .filter((user) =>
-        user[searchCategory].toLowerCase().startsWith(query)
-      )
+      .filter((user) => searchInCategory(user))
       .map((user) => {
         return user;
       });
@@ -54,6 +83,18 @@ export default function Table(data) {
       setCurrentPage(currentPage - 1);
     }
   };
+
+  const getStatusColour = (status) => {
+    if (status === "Active") {
+      return "bg-green-300";
+    } else if (status === "Pending") {
+      return "bg-yellow-300";
+    } else if (status === "Blocked") {
+      return "bg-red-400";
+    } else {
+      return "bg-zinc-300";
+    }
+  };
   return (
     <div className="container mx-auto px-4 sm:px-8">
       <div>
@@ -68,13 +109,15 @@ export default function Table(data) {
               <select
                 className="appearance-none h-full rounded-l border block appearance-none w-full bg-red-200 border-gray-400 text-gray-700 py-2 px-4 pr-8 leading-tight focus:outline-none focus:border-gray-500"
                 id="search-category"
+                onChange={handleCategoryChange}
               >
-                <option value="first_name">Name</option>
+                <option value="first_name">First Name</option>
+                <option value="last_name">Last Name</option>
                 <option value="email">Email</option>
                 <option value="username">Username</option>
                 <option value="gender">Gender</option>
-                <option>Status</option>
-                <option>City</option>
+                <option value="city">City</option>
+                <option value="status">Status</option>
               </select>
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                 <svg
@@ -86,21 +129,67 @@ export default function Table(data) {
                 </svg>
               </div>
             </div>
-            <div className="block relative">
-              <span className="h-full absolute inset-y-0 left-0 flex items-center pl-2">
-                <svg
-                  viewBox="0 0 24 24"
-                  className="h-4 w-4 fill-current text-gray-500"
+            {filters.includes(category) ? (
+              <div className="relative">
+                <select
+                  className="appearance-none h-full rounded-r border block appearance-none w-full bg-white border-gray-400 text-gray-700 py-2 px-4 pr-8 leading-tight focus:outline-none focus:border-gray-500"
+                  onChange={handleFilterChange}
+                  id="search-filter"
                 >
-                  <path d="M10 4a6 6 0 100 12 6 6 0 000-12zm-8 6a8 8 0 1114.32 4.906l5.387 5.387a1 1 0 01-1.414 1.414l-5.387-5.387A8 8 0 012 10z"></path>
-                </svg>
-              </span>
-              <input
-                placeholder="Search"
-                className="appearance-none rounded-r sm:rounded-l-none border border-gray-400 border-b block pl-8 pr-6 py-2 w-full bg-white text-sm placeholder-gray-400 text-gray-700 focus:bg-white focus:placeholder-gray-600 focus:text-gray-700 focus:outline-none"
-                onChange={handleChange}
-              />
-            </div>
+                  {category === "status" ? (
+                    <Fragment>
+                      <option disabled selected>
+                        Choose
+                      </option>
+                      <option value="active">Active</option>
+                      <option value="pending">Pending</option>
+                      <option value="blocked">Blocked</option>
+                      <option value="idle">Idle</option>
+                    </Fragment>
+                  ) : (
+                    <Fragment>
+                      <option disabled selected>
+                        Choose
+                      </option>
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                      <option value="agender">Agender</option>
+                      <option value="bigender">Bigender</option>
+                      <option value="polygender">Polygender</option>
+                      <option value="genderfluid">Genderfluid</option>
+                      <option value="genderqueer">Genderqueer</option>
+                      <option value="non-Binary">Non-binary</option>
+                    </Fragment>
+                  )}
+                </select>
+
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                  <svg
+                    className="fill-current h-4 w-4"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+                  </svg>
+                </div>
+              </div>
+            ) : (
+              <div className="block relative">
+                <span className="h-full absolute inset-y-0 left-0 flex items-center pl-2">
+                  <svg
+                    viewBox="0 0 24 24"
+                    className="h-4 w-4 fill-current text-gray-500"
+                  >
+                    <path d="M10 4a6 6 0 100 12 6 6 0 000-12zm-8 6a8 8 0 1114.32 4.906l5.387 5.387a1 1 0 01-1.414 1.414l-5.387-5.387A8 8 0 012 10z"></path>
+                  </svg>
+                </span>
+                <input
+                  placeholder="Search"
+                  className="appearance-none rounded-r sm:rounded-l-none border border-gray-400 border-b block pl-8 pr-6 py-2 w-full bg-white text-sm placeholder-gray-400 text-gray-700 focus:bg-white focus:placeholder-gray-600 focus:text-gray-700 focus:outline-none"
+                  onChange={handleChange}
+                />
+              </div>
+            )}
           </div>
         </div>
 
@@ -130,8 +219,6 @@ export default function Table(data) {
                 </tr>
               </thead>
               <tbody>
-                {/* paginate data */}
-                {/* {currentItems.map((item) => ( */}
                 {currentItems.map((user) => (
                   <tr key={user.id}>
                     <td className="px-5 py-2 border-b border-gray-200 bg-white text-sm">
@@ -174,10 +261,12 @@ export default function Table(data) {
                       <span className="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
                         <span
                           aria-hidden
-                          className="absolute inset-0 bg-green-200 opacity-50 rounded-full"
+                          className={`absolute inset-0 ${getStatusColour(
+                            user.subscription.status
+                          )} opacity-80 rounded-full`}
                         ></span>
-                        <span className="relative">
-                          {user.subscription.status}{" "}
+                        <span className="relative text-zinc-800">
+                          {user.subscription.status}
                         </span>
                       </span>
                     </td>
@@ -190,8 +279,12 @@ export default function Table(data) {
         <div className="px-5 py-5 bg-white flex flex-col xs:flex-row items-center xs:justify-between          ">
           <span className="text-xs xs:text-sm text-gray-900">
             Showing {indexOfFirstItem + 1} to{" "}
-            {itemCount % 10 === 0 ? indexOfLastItem : itemCount} of{" "}
-            {itemCount} Entries
+            {itemCount % 10 === 0
+              ? indexOfLastItem
+              : itemCount < currentPage * 10
+              ? itemCount
+              : indexOfLastItem}{" "}
+            of {itemCount} Entries
           </span>
           <div className="inline-flex mt-2 xs:mt-0">
             <button
