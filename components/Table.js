@@ -1,5 +1,33 @@
+import { useState } from "react";
+
 export default function Table(data) {
-  console.log(data);
+  // paginate data
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
+  const itemCount = useState(data.data.length);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = data.data.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
+
+  // change page
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  // function for previous and next buttons
+  const nextPage = () => {
+    if (currentPage < Math.ceil(data.data.length / itemsPerPage)) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const prevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 sm:px-8">
       <div className="py-8">
@@ -78,8 +106,10 @@ export default function Table(data) {
                 </tr>
               </thead>
               <tbody>
-                {data.data.map((user) => (
-                  <tr>
+                {/* paginate data */}
+                {/* {currentItems.map((item) => ( */}
+                {currentItems.map((user) => (
+                  <tr key={user.id}>
                     <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                       <div className="flex items-center">
                         <div className="flex-shrink-0 w-10 h-10">
@@ -123,13 +153,20 @@ export default function Table(data) {
             </table>
             <div className="px-5 py-5 bg-white border-t flex flex-col xs:flex-row items-center xs:justify-between          ">
               <span className="text-xs xs:text-sm text-gray-900">
-                Showing 1 to 10 of 50 Entries
+                Showing {indexOfFirstItem + 1} to {indexOfLastItem} of{" "}
+                {itemCount} Entries
               </span>
               <div className="inline-flex mt-2 xs:mt-0">
-                <button className="text-sm bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-l">
+                <button
+                  onClick={prevPage}
+                  className="text-sm bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-l"
+                >
                   Prev
                 </button>
-                <button className="text-sm bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-r">
+                <button
+                  onClick={nextPage}
+                  className="text-sm bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-r"
+                >
                   Next
                 </button>
               </div>

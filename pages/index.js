@@ -16,7 +16,7 @@ export default function Home({ data }) {
 
 export const getStaticProps = async () => {
   const res = await fetch(
-    "https://random-data-api.com/api/users/random_user?size=10"
+    "https://random-data-api.com/api/users/random_user?size=50"
   );
   const data = await res.json();
   return {
