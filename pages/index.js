@@ -1,5 +1,3 @@
-import Head from "next/head";
-import Image from "next/image";
 import Table from "../components/Table.js";
 
 export default function Home({ data }) {

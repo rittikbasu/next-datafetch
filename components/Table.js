@@ -1,32 +1,16 @@
 import { useState, Fragment } from "react";
+import Image from "next/image";
 
 export default function Table(data) {
   const filters = ["gender", "status"];
-  // paginate data
+
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const [category, setCategory] = useState("first_name");
   const [status, setStatus] = useState("active");
   const [gender, setGender] = useState("male");
-
-  const handleChange = (e) => {
-    setUserdata(searchData(e.target.value.toLowerCase()));
-  };
-
-  const handleCategoryChange = (e) => {
-    setCategory(e.target.value);
-  };
-
-  const handleFilterChange = (e) => {
-    if (category === "status") {
-      setStatus(e.target.value);
-    } else {
-      setGender(e.target.value);
-    }
-    setUserdata(searchData(e.target.value));
-  };
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 
   const searchData = (query) => {
     console.log(query);
@@ -68,12 +52,29 @@ export default function Table(data) {
     indexOfLastItem
   );
 
+  const handleSearchChange = (e) => {
+    setUserdata(searchData(e.target.value.toLowerCase()));
+  };
+
+  const handleCategoryChange = (e) => {
+    setCategory(e.target.value);
+  };
+
+  const handleFilterChange = (e) => {
+    if (category === "status") {
+      setStatus(e.target.value);
+    } else {
+      setGender(e.target.value);
+    }
+    setUserdata(searchData(e.target.value));
+  };
+
   // change page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   // function for previous and next buttons
   const nextPage = () => {
-    if (currentPage < Math.ceil(data.data.length / itemsPerPage)) {
+    if (currentPage < Math.ceil(itemCount / itemsPerPage)) {
       setCurrentPage(currentPage + 1);
     }
   };
@@ -86,11 +87,11 @@ export default function Table(data) {
 
   const getStatusColour = (status) => {
     if (status === "Active") {
-      return "bg-green-300";
+      return "bg-green-200";
     } else if (status === "Pending") {
-      return "bg-yellow-300";
+      return "bg-yellow-200";
     } else if (status === "Blocked") {
-      return "bg-red-400";
+      return "bg-red-300";
     } else {
       return "bg-zinc-300";
     }
@@ -185,8 +186,8 @@ export default function Table(data) {
                 </span>
                 <input
                   placeholder="Search"
-                  className="appearance-none rounded-r sm:rounded-l-none border border-gray-400 border-b block pl-8 pr-6 py-2 w-full bg-white text-sm placeholder-gray-400 text-gray-700 focus:bg-white focus:placeholder-gray-600 focus:text-gray-700 focus:outline-none"
-                  onChange={handleChange}
+                  className="appearance-none rounded-r border border-gray-400 border-b block pl-8 pr-6 py-2 w-full bg-white text-sm placeholder-gray-400 text-gray-700 focus:bg-white focus:placeholder-gray-600 focus:text-gray-700 focus:outline-none"
+                  onChange={handleSearchChange}
                 />
               </div>
             )}
@@ -224,9 +225,11 @@ export default function Table(data) {
                     <td className="px-5 py-2 border-b border-gray-200 bg-white text-sm">
                       <div className="flex items-center">
                         <div className="flex-shrink-0 w-10 h-10">
-                          <img
-                            className="w-full h-full rounded-full"
+                          <Image
+                            className="w-full h-full rounded-full border border-gray-200"
                             src={user.avatar}
+                            width={40}
+                            height={40}
                             alt=""
                           />
                         </div>
@@ -263,7 +266,7 @@ export default function Table(data) {
                           aria-hidden
                           className={`absolute inset-0 ${getStatusColour(
                             user.subscription.status
-                          )} opacity-80 rounded-full`}
+                          )} opacity-80 rounded-xl`}
                         ></span>
                         <span className="relative text-zinc-800">
                           {user.subscription.status}
@@ -276,7 +279,7 @@ export default function Table(data) {
             </table>
           </div>
         </div>
-        <div className="px-5 py-5 bg-white flex flex-col xs:flex-row items-center xs:justify-between          ">
+        <div className="px-5 gap-y-5 bg-white flex flex-col xs:flex-row items-center xs:justify-between">
           <span className="text-xs xs:text-sm text-gray-900">
             Showing {indexOfFirstItem + 1} to{" "}
             {itemCount % 10 === 0
