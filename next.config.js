@@ -3,7 +3,7 @@ const nextConfig = {
   reactStrictMode: true,
   pageExtensions: ["jsx", "js"],
   images: {
-    domains: ["robohash.org"],
+    domains: ["robohash.org", "photos.angel.co", "angel.co"],
   },
 };
 

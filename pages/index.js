@@ -1,7 +1,7 @@
-import Table from "../components/Table.js";
+import NormalTable from "../components/NormalTable.js";
 
 export default function Home({ data }) {
-  return <Table data={data} />;
+  return <NormalTable data={data} />;
 }
 
 export const getStaticProps = async () => {

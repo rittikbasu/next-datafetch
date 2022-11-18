@@ -1,9 +1,9 @@
 import { useState, Fragment } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
-export default function Table(data) {
+export default function NormalTable(data) {
   const filters = ["gender", "status"];
-
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
   const [category, setCategory] = useState("first_name");
@@ -13,7 +13,6 @@ export default function Table(data) {
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 
   const searchData = (query) => {
-    console.log(query);
     if (!query) {
       return data.data;
     }
@@ -89,9 +88,12 @@ export default function Table(data) {
     <div className="container mx-auto px-4 sm:px-8">
       <div>
         <div className="py-8 text-center">
-          <h1 className="text-5xl text-[#f34d76] font-semibold leading-tight">
-            <span className="text-blue-700">Super</span>mind
-          </h1>
+          <Link
+            href="/supermind"
+            className="text-5xl text-[#f34d76] font-semibold leading-tight"
+          >
+            <span className="text-zinc-300">Normal</span>mind
+          </Link>
         </div>
         <SearchBar
           handleSearchChange={handleSearchChange}
@@ -244,7 +246,7 @@ const SearchBar = ({
       <div className="flex flex-row mb-1 sm:mb-0">
         <div className="relative">
           <select
-            className="appearance-none h-full rounded-l border block appearance-none w-full bg-red-200 border-gray-400 text-gray-700 py-2 px-4 pr-8 leading-tight focus:outline-none focus:border-gray-500"
+            className="h-full rounded-l border block appearance-none w-full bg-red-200 border-gray-400 text-gray-700 py-2 px-4 pr-8 leading-tight focus:outline-none focus:border-gray-500"
             id="search-category"
             onChange={handleCategoryChange}
           >
@@ -269,7 +271,7 @@ const SearchBar = ({
         {filters.includes(category) ? (
           <div className="relative">
             <select
-              className="appearance-none h-full rounded-r border block appearance-none w-full bg-white border-gray-400 text-gray-700 py-2 px-4 pr-8 leading-tight focus:outline-none focus:border-gray-500"
+              className="h-full rounded-r border block appearance-none w-full bg-white border-gray-400 text-gray-700 py-2 px-4 pr-8 leading-tight focus:outline-none focus:border-gray-500"
               onChange={handleFilterChange}
               id="search-filter"
             >
