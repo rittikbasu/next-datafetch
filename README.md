@@ -9,7 +9,7 @@
 - data is fetched client side using getStaticProps so site functions as a static site
 - a unified search bar to search through different fields
 - data is paginated
-- uses a custom api that gives an object which contains details of the Supermind team
+- uses a [custom api](https://supermind.rittikbasu.repl.co/team) built using python and flask that gives an object which contains details of the Supermind team
 - no external libraries were harmed in the making of this project
 
 ## How to set up and run the project?
