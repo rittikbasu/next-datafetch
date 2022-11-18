@@ -1,6 +1,6 @@
 # Data fetching from an external API using Next.js
 
-![alt text](https://ik.imagekit.io/zwcfsadeijm/screenshot-rocks__5__KlUg9CFHM.png?ik-sdk-version=javascript-1.4.3&updatedAt=1668776892231)
+![alt text](https://ik.imagekit.io/zwcfsadeijm/screenshot-rocks__6__RSf0EhgNV.png?ik-sdk-version=javascript-1.4.3&updatedAt=1668782366284)
 
 ## The what and how
 
