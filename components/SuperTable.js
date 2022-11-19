@@ -14,28 +14,23 @@ export default function SuperTable(data) {
     indexOfFirstItem,
     indexOfLastItem
   );
-
+  console.log(itemCount);
   // function for global search
   const handleSearch = (e) => {
-    const keyword = e.target.value;
-    const filteredData = data.data.data.filter((item) => {
-      return (
-        item.first_name
-          .toLowerCase()
-          .startsWith(keyword.toLowerCase()) ||
-        item.last_name
-          .toLowerCase()
-          .startsWith(keyword.toLowerCase()) ||
-        item.position
-          .toLowerCase()
-          .startsWith(keyword.toLowerCase()) ||
-        item.location
-          .toLowerCase()
-          .startsWith(keyword.toLowerCase()) ||
-        item.duration.toLowerCase().startsWith(keyword.toLowerCase())
-      );
-    });
-    setUserdata(filteredData);
+    // debouncing the search
+    setTimeout(() => {
+      const keyword = e.target.value.toLowerCase();
+      const filteredData = data.data.data.filter((item) => {
+        return (
+          item.first_name.toLowerCase().startsWith(keyword) ||
+          item.last_name.toLowerCase().startsWith(keyword) ||
+          item.position.toLowerCase().startsWith(keyword) ||
+          item.location.toLowerCase().startsWith(keyword) ||
+          item.duration.toLowerCase().startsWith(keyword)
+        );
+      });
+      setUserdata(filteredData);
+    }, 200);
   };
 
   // change page
