@@ -1,71 +1,63 @@
 import { useState, Fragment } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { Navigation, TableHead } from "./Table.js";
 
 export default function NormalTable(data) {
-  const filters = ["gender", "status"];
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
   const [category, setCategory] = useState("first_name");
-  const [status, setStatus] = useState("active");
-  const [gender, setGender] = useState("male");
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 
-  const searchData = (query) => {
-    if (!query) {
-      return data.data;
-    }
-
-    function searchInCategory(user) {
-      let filters;
-      if (category === "city") {
-        filters = user.address[category]
-          .toLowerCase()
-          .startsWith(query);
-      } else if (category === "status") {
-        console.log("status");
-        filters = user.subscription.status
-          .toLowerCase()
-          .startsWith(query);
-      } else {
-        filters = user[category].toLowerCase().startsWith(query);
-      }
-      return filters;
-    }
-
-    let filteredData = data.data
-      .filter((user) => searchInCategory(user))
-      .map((user) => {
-        return user;
-      });
-
-    setCurrentPage(1);
-    return filteredData;
-  };
-
-  const [userdata, setUserdata] = useState(searchData());
+  const [userdata, setUserdata] = useState(data.data);
   const itemCount = userdata.length;
   const currentItems = userdata.slice(
     indexOfFirstItem,
     indexOfLastItem
   );
 
-  const handleSearchChange = (e) => {
-    setUserdata(searchData(e.target.value.toLowerCase()));
+  const fields = [
+    "Name",
+    "Email",
+    "Username",
+    "Gender",
+    "City",
+    "Status",
+  ];
+
+  const handleSearch = (e) => {
+    // debouncing the search
+    setTimeout(() => {
+      const keyword = e.target.value.toLowerCase();
+      const filteredData = data.data.filter((item) => {
+        return (
+          item.gender.toLowerCase().startsWith(keyword) ||
+          item.subscription.status
+            .toLowerCase()
+            .startsWith(keyword) ||
+          item.first_name.toLowerCase().startsWith(keyword) ||
+          item.last_name.toLowerCase().startsWith(keyword) ||
+          item.username.toLowerCase().startsWith(keyword) ||
+          item.address.city.toLowerCase().startsWith(keyword)
+        );
+      });
+      setCurrentPage(1);
+      setUserdata(filteredData);
+    }, 200);
   };
 
-  const handleCategoryChange = (e) => {
-    setCategory(e.target.value);
-  };
-
-  const handleFilterChange = (e) => {
-    if (category === "status") {
-      setStatus(e.target.value);
-    } else {
-      setGender(e.target.value);
+  const handleFilters = (e) => {
+    if (category !== global) {
+      const searchFilter = document.getElementById("search-filter");
+      if (
+        typeof searchFilter !== "undefined" &&
+        searchFilter !== null
+      ) {
+        searchFilter.selectedIndex = 0;
+      }
     }
-    setUserdata(searchData(e.target.value));
+    setCategory(e.target.value);
   };
 
   // change page
@@ -96,70 +88,32 @@ export default function NormalTable(data) {
           </Link>
         </div>
         <SearchBar
-          handleSearchChange={handleSearchChange}
-          handleCategoryChange={handleCategoryChange}
-          handleFilterChange={handleFilterChange}
-          filters={filters}
+          handleSearch={handleSearch}
+          handleFilters={handleFilters}
           category={category}
         />
         <div className="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-x-auto">
           <div className="inline-block min-w-full shadow rounded-lg overflow-hidden">
-            <table className="min-w-full leading-normal">
-              <thead>
-                <tr>
-                  <th className="px-5 py-3 border-b-2 border-gray-200 bg-blue-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Name
-                  </th>
-                  <th className="px-5 py-3 border-b-2 border-gray-200 bg-blue-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Email
-                  </th>
-                  <th className="px-5 py-3 border-b-2 border-gray-200 bg-blue-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Username
-                  </th>
-                  <th className="px-5 py-3 border-b-2 border-gray-200 bg-blue-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Gender
-                  </th>
-                  <th className="px-5 py-3 border-b-2 border-gray-200 bg-blue-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    City
-                  </th>
-                  <th className="px-5 py-3 border-b-2 border-gray-200 bg-blue-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Status
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {currentItems.map((user) => (
-                  <Row key={user.id} user={user} />
-                ))}
-              </tbody>
-            </table>
+            {itemCount != 0 && (
+              <table className="min-w-full leading-normal">
+                <TableHead fields={fields} />
+                <tbody>
+                  {currentItems.map((user) => (
+                    <Row key={user.id} user={user} />
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
         </div>
-        <div className="px-5 gap-y-5 bg-white flex flex-col xs:flex-row items-center xs:justify-between">
-          <span className="text-xs xs:text-sm text-gray-900">
-            Showing {indexOfFirstItem + 1} to{" "}
-            {itemCount % 10 === 0
-              ? indexOfLastItem
-              : itemCount < currentPage * 10
-              ? itemCount
-              : indexOfLastItem}{" "}
-            of {itemCount} Entries
-          </span>
-          <div className="inline-flex mt-2 xs:mt-0">
-            <button
-              onClick={prevPage}
-              className="text-sm bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-l"
-            >
-              Prev
-            </button>
-            <button
-              onClick={nextPage}
-              className="text-sm bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-r"
-            >
-              Next
-            </button>
-          </div>
-        </div>
+        <Navigation
+          itemCount={itemCount}
+          indexOfFirstItem={indexOfFirstItem}
+          indexOfLastItem={indexOfLastItem}
+          currentPage={currentPage}
+          nextPage={nextPage}
+          prevPage={prevPage}
+        />
       </div>
     </div>
   );
@@ -197,27 +151,27 @@ const Row = ({ user }, key) => {
           </div>
         </div>
       </td>
-      <td className="px-5 py-2 border-b border-gray-200 bg-white text-sm">
+      <td className="px-5 py-2 border-b border-gray-200 bg-white text-sm text-center">
         <p className="text-gray-900 whitespace-no-wrap">
           {user.email}
         </p>
       </td>
-      <td className="px-5 py-2 border-b border-gray-200 bg-white text-sm">
+      <td className="px-5 py-2 border-b border-gray-200 bg-white text-sm text-center">
         <p className="text-gray-900 whitespace-no-wrap">
           {user.username}
         </p>
       </td>
-      <td className="px-5 py-2 border-b border-gray-200 bg-white text-sm">
+      <td className="px-5 py-2 border-b border-gray-200 bg-white text-sm text-center">
         <p className="text-gray-900 whitespace-no-wrap">
           {user.gender}
         </p>
       </td>
-      <td className="px-5 py-2 border-b border-gray-200 bg-white text-sm">
+      <td className="px-5 py-2 border-b border-gray-200 bg-white text-sm text-center">
         <p className="text-gray-900 whitespace-no-wrap">
           {user.address.city}
         </p>
       </td>
-      <td className="px-5 py-2 border-b border-gray-200 bg-white text-sm">
+      <td className="px-5 py-2 border-b border-gray-200 bg-white text-sm text-center">
         <span className="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
           <span
             aria-hidden
@@ -234,28 +188,19 @@ const Row = ({ user }, key) => {
   );
 };
 
-const SearchBar = ({
-  handleCategoryChange,
-  handleSearchChange,
-  handleFilterChange,
-  category,
-  filters,
-}) => {
+const SearchBar = ({ handleFilters, handleSearch, category }) => {
+  const filters = ["gender", "status"];
   return (
     <div className="my-2 flex flex-row justify-center">
       <div className="flex flex-row mb-1 sm:mb-0">
         <div className="relative">
           <select
-            className="h-full rounded-l border block appearance-none w-full bg-red-200 border-gray-400 text-gray-700 py-2 px-4 pr-8 leading-tight focus:outline-none focus:border-gray-500"
+            className="h-full rounded-l border block appearance-none w-full bg-red-200 border-gray-400 text-gray-700 py-2 px-4 pr-8 leading-tight focus:outline-none"
             id="search-category"
-            onChange={handleCategoryChange}
+            onChange={handleFilters}
           >
-            <option value="first_name">First Name</option>
-            <option value="last_name">Last Name</option>
-            <option value="email">Email</option>
-            <option value="username">Username</option>
+            <option value="global">Global</option>
             <option value="gender">Gender</option>
-            <option value="city">City</option>
             <option value="status">Status</option>
           </select>
           <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
@@ -271,8 +216,8 @@ const SearchBar = ({
         {filters.includes(category) ? (
           <div className="relative">
             <select
-              className="h-full rounded-r border block appearance-none w-full bg-white border-gray-400 text-gray-700 py-2 px-4 pr-8 leading-tight focus:outline-none focus:border-gray-500"
-              onChange={handleFilterChange}
+              className="h-full rounded-r border block appearance-none w-full bg-white border-gray-400 text-gray-700 py-2 px-4 pr-8 leading-tight focus:outline-none"
+              onChange={handleSearch}
               id="search-filter"
             >
               {category === "status" ? (
@@ -325,7 +270,7 @@ const SearchBar = ({
             <input
               placeholder="Search"
               className="appearance-none rounded-r border border-gray-400 border-b block pl-8 pr-6 py-2 w-full bg-white text-sm placeholder-gray-400 text-gray-700 focus:bg-white focus:placeholder-gray-600 focus:text-gray-700 focus:outline-none"
-              onChange={handleSearchChange}
+              onChange={handleSearch}
             />
           </div>
         )}
