@@ -7,6 +7,7 @@ export function Navigation({
   currentPage,
   prevPage,
   nextPage,
+  itemsPerPage,
 }) {
   return (
     <Fragment>
@@ -14,15 +15,15 @@ export function Navigation({
         <div className="px-5 gap-y-5 bg-white flex flex-col xs:flex-row items-center xs:justify-between">
           <span className="text-xs xs:text-sm text-gray-900">
             Showing {indexOfFirstItem + 1} to{" "}
-            {itemCount % 5 === 0
+            {itemCount % itemsPerPage === 0
               ? indexOfLastItem
-              : itemCount < currentPage * 5
+              : itemCount < currentPage * itemsPerPage
               ? itemCount
               : indexOfLastItem}{" "}
             of {itemCount} Entries
           </span>
 
-          {itemCount >= 5 && (
+          {itemCount >= itemsPerPage && (
             <div className="inline-flex mt-2 xs:mt-0">
               <button
                 onClick={prevPage}

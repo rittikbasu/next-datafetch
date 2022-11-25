@@ -5,7 +5,7 @@ import { Navigation, TableHead } from "./Table.js";
 
 export default function SuperTable(data) {
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(5);
+  const itemsPerPage = 5;
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 
@@ -106,6 +106,7 @@ export default function SuperTable(data) {
           currentPage={currentPage}
           nextPage={nextPage}
           prevPage={prevPage}
+          itemsPerPage={itemsPerPage}
         />
       </div>
     </div>

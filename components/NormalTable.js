@@ -5,7 +5,7 @@ import { Navigation, TableHead } from "./Table.js";
 
 export default function NormalTable(data) {
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(10);
+  const itemsPerPage = 10;
   const [category, setCategory] = useState("");
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -113,6 +113,7 @@ export default function NormalTable(data) {
           currentPage={currentPage}
           nextPage={nextPage}
           prevPage={prevPage}
+          itemsPerPage={itemsPerPage}
         />
       </div>
     </div>
