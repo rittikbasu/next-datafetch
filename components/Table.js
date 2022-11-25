@@ -14,14 +14,15 @@ export function Navigation({
         <div className="px-5 gap-y-5 bg-white flex flex-col xs:flex-row items-center xs:justify-between">
           <span className="text-xs xs:text-sm text-gray-900">
             Showing {indexOfFirstItem + 1} to{" "}
-            {itemCount % 10 === 0
+            {itemCount % 5 === 0
               ? indexOfLastItem
-              : itemCount < currentPage * 10
+              : itemCount < currentPage * 5
               ? itemCount
               : indexOfLastItem}{" "}
             of {itemCount} Entries
           </span>
-          {itemCount > 10 && (
+
+          {itemCount >= 5 && (
             <div className="inline-flex mt-2 xs:mt-0">
               <button
                 onClick={prevPage}
